@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ / Android Studio / VS Code
@@ -71,3 +73,6 @@ app.*.map.json
 *.sqlite
 *.sqlite3
 money_manager_backup_*.json
+ios/Runner.xcodeproj
+ios/Runner.xcworkspace
+ios/Runner.xcodeproj/project.pbxproj

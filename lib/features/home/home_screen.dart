@@ -86,7 +86,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   setState(() => _searchQuery = v),
                             )
                           : Text(
-                              'MoneyFlow',
+                              'Rexxflow',
                               style: Theme.of(context)
                                   .textTheme
                                   .titleLarge

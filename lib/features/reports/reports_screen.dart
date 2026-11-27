@@ -64,43 +64,14 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
                 child: Row(
                   children: [
-                    PopupMenuButton<String>(
-                      initialValue: _txType,
-                      onSelected: (v) {
+                    _TxTypeSelectField(
+                      value: _txType,
+                      onChanged: (v) {
                         setState(() {
                           _txType = v;
                           _selectedCategoryId = null;
                         });
                       },
-                      itemBuilder: (_) => const [
-                        PopupMenuItem(value: 'expense', child: Text('Expense')),
-                        PopupMenuItem(value: 'income', child: Text('Income')),
-                      ],
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 16,
-                            backgroundColor:
-                                activeAccent.withValues(alpha: 0.14),
-                            child: Icon(
-                              _txType == 'expense'
-                                  ? Icons.north_east_rounded
-                                  : Icons.south_west_rounded,
-                              size: 16,
-                              color: activeAccent,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            _txType == 'expense' ? 'Expense' : 'Income',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(fontWeight: FontWeight.w800),
-                          ),
-                          const Icon(Icons.keyboard_arrow_down_rounded),
-                        ],
-                      ),
                     ),
                     const Spacer(),
                     SizedBox(
@@ -599,5 +570,144 @@ class _PeriodBarChart extends StatelessWidget {
           ),
         );
     }
+  }
+}
+
+class _TxTypeSelectField extends StatelessWidget {
+  const _TxTypeSelectField({
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String value;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final isExpense = value == 'expense';
+    final activeAccent = isExpense ? colors.expense : colors.income;
+    final activeSoft = isExpense ? colors.expenseSoft : colors.incomeSoft;
+
+    return PopupMenuButton<String>(
+      initialValue: value,
+      onSelected: onChanged,
+      offset: const Offset(0, 44),
+      elevation: 4,
+      color: colors.surfaceCard,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(color: colors.cardBorder),
+      ),
+      itemBuilder: (context) => [
+        _buildMenuItem(
+          context,
+          itemValue: 'expense',
+          label: 'Expense',
+          icon: Icons.north_east_rounded,
+          accent: colors.expense,
+          soft: colors.expenseSoft,
+        ),
+        _buildMenuItem(
+          context,
+          itemValue: 'income',
+          label: 'Income',
+          icon: Icons.south_west_rounded,
+          accent: colors.income,
+          soft: colors.incomeSoft,
+        ),
+      ],
+      child: Container(
+        height: 38,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: colors.surfaceCard,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: colors.cardBorder),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: activeSoft,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                isExpense
+                    ? Icons.north_east_rounded
+                    : Icons.south_west_rounded,
+                size: 14,
+                color: activeAccent,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              isExpense ? 'Expense' : 'Income',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+            const SizedBox(width: 6),
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 18,
+              color: colors.mutedText,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  PopupMenuItem<String> _buildMenuItem(
+    BuildContext context, {
+    required String itemValue,
+    required String label,
+    required IconData icon,
+    required Color accent,
+    required Color soft,
+  }) {
+    final selected = value == itemValue;
+    return PopupMenuItem<String>(
+      value: itemValue,
+      child: Row(
+        children: [
+          Container(
+            width: 26,
+            height: 26,
+            decoration: BoxDecoration(
+              color: soft,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 14, color: accent),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  ),
+            ),
+          ),
+          if (selected)
+            Icon(
+              Icons.check_rounded,
+              size: 18,
+              color: accent,
+            ),
+        ],
+      ),
+    );
   }
 }

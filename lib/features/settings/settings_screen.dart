@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -66,11 +67,13 @@ class SettingsScreen extends ConsumerWidget {
                   },
                 ),
                 Divider(height: 1, color: colors.cardBorder),
-                ListTile(
-                  leading: const Icon(Icons.upload_file_outlined),
-                  title: const Text('Export Backup (JSON)'),
-                  subtitle: const Text('Save all wallets, bills & transactions'),
-                  onTap: () => _exportBackup(context, ref),
+                Builder(
+                  builder: (tileContext) => ListTile(
+                    leading: const Icon(Icons.upload_file_outlined),
+                    title: const Text('Export Backup (JSON)'),
+                    subtitle: const Text('Save all wallets, bills & transactions'),
+                    onTap: () => _exportBackup(tileContext, ref),
+                  ),
                 ),
                 Divider(height: 1, color: colors.cardBorder),
                 ListTile(
@@ -178,12 +181,44 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Future<void> _exportBackup(BuildContext context, WidgetRef ref) async {
+    final box = context.findRenderObject() as RenderBox?;
+    final Rect shareOrigin;
+    if (box != null && box.hasSize && !box.size.isEmpty) {
+      shareOrigin = box.localToGlobal(Offset.zero) & box.size;
+    } else {
+      final screenSize = MediaQuery.sizeOf(context);
+      shareOrigin = Rect.fromLTWH(
+        0,
+        0,
+        screenSize.width > 0 ? screenSize.width : 1,
+        screenSize.height > 0 ? screenSize.height / 2 : 1,
+      );
+    }
+
     try {
       final file = await ref.read(backupServiceProvider).exportToJsonFile();
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: 'Money Manager Offline Backup',
-      );
+      final xFile = XFile(file.path, mimeType: 'application/json');
+      try {
+        await Share.shareXFiles(
+          [xFile],
+          text: 'Money Manager Offline Backup',
+          sharePositionOrigin: shareOrigin,
+        );
+      } on PlatformException {
+        final bytes = await file.readAsBytes();
+        final savedPath = await FilePicker.platform.saveFile(
+          dialogTitle: 'Save Backup (JSON)',
+          fileName: file.uri.pathSegments.last,
+          type: FileType.custom,
+          allowedExtensions: ['json'],
+          bytes: bytes,
+        );
+        if (savedPath != null && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Backup saved successfully')),
+          );
+        }
+      }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
