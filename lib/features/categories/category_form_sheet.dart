@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/providers/app_providers.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/widgets/app_segmented_tabs.dart';
 import '../../data/database/app_database.dart';
 
 class CategoryFormSheet extends ConsumerStatefulWidget {
@@ -68,14 +70,27 @@ class _CategoryFormSheetState extends ConsumerState<CategoryFormSheet> {
               ),
               const SizedBox(height: 16),
               if (!isEdit) ...[
-                SegmentedButton<String>(
-                  segments: const [
-                    ButtonSegment(value: 'expense', label: Text('Expense')),
-                    ButtonSegment(value: 'income', label: Text('Income')),
+                AppSegmentedTabs<String>(
+                  height: 46,
+                  borderRadius: 15,
+                  selectedValue: _categoryType,
+                  onChanged: (v) => setState(() => _categoryType = v),
+                  options: [
+                    AppTabOption(
+                      value: 'expense',
+                      label: 'Expense',
+                      icon: Icons.north_east_rounded,
+                      accentColor: context.appColors.expense,
+                      softColor: context.appColors.expenseSoft,
+                    ),
+                    AppTabOption(
+                      value: 'income',
+                      label: 'Income',
+                      icon: Icons.south_west_rounded,
+                      accentColor: context.appColors.income,
+                      softColor: context.appColors.incomeSoft,
+                    ),
                   ],
-                  selected: {_categoryType},
-                  onSelectionChanged: (s) =>
-                      setState(() => _categoryType = s.first),
                 ),
                 const SizedBox(height: 14),
               ],
