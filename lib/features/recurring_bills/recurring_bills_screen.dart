@@ -7,6 +7,7 @@ import '../../core/providers/app_providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/utils/date_utils.dart';
+import '../../core/widgets/app_segmented_tabs.dart';
 import '../../data/database/daos/bill_dao.dart';
 import '../settings/settings_screen.dart';
 import 'bill_form_sheet.dart';
@@ -56,17 +57,29 @@ class _RecurringBillsScreenState extends ConsumerState<RecurringBillsScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-            child: SizedBox(
-              width: double.infinity,
-              child: SegmentedButton<bool>(
-                segments: const [
-                  ButtonSegment(value: true, label: Text('Upcoming')),
-                  ButtonSegment(value: false, label: Text('Paused')),
-                ],
-                selected: {_showActive},
-                onSelectionChanged: (s) =>
-                    setState(() => _showActive = s.first),
-              ),
+            child: AppSegmentedTabs<bool>(
+              height: 48,
+              borderRadius: 16,
+              selectedValue: _showActive,
+              onChanged: (v) => setState(() => _showActive = v),
+              options: [
+                AppTabOption(
+                  value: true,
+                  label: 'Upcoming',
+                  icon: Icons.event_available_rounded,
+                  count: ref.watch(activeBillsProvider).valueOrNull?.length,
+                  accentColor: Theme.of(context).colorScheme.primary,
+                  softColor: colors.canvas,
+                ),
+                AppTabOption(
+                  value: false,
+                  label: 'Paused',
+                  icon: Icons.pause_circle_outline_rounded,
+                  count: ref.watch(pausedBillsProvider).valueOrNull?.length,
+                  accentColor: colors.warning,
+                  softColor: colors.warningSoft,
+                ),
+              ],
             ),
           ),
           Expanded(

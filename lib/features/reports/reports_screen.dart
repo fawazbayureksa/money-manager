@@ -8,6 +8,7 @@ import '../../core/providers/app_providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/utils/date_utils.dart';
+import '../../core/widgets/app_segmented_tabs.dart';
 import '../../core/widgets/transaction_tile.dart';
 import '../../data/database/daos/report_dao.dart';
 import '../../data/database/daos/transaction_dao.dart';
@@ -102,28 +103,40 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                       ),
                     ),
                     const Spacer(),
-                    SegmentedButton<ReportPeriod>(
-                      showSelectedIcon: false,
-                      style: ButtonStyle(
-                        visualDensity: VisualDensity.compact,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    SizedBox(
+                      width: 132,
+                      child: AppSegmentedTabs<ReportPeriod>(
+                        height: 38,
+                        borderRadius: 12,
+                        selectedValue: _period,
+                        onChanged: (p) {
+                          setState(() {
+                            _period = p;
+                            _anchor = DateTime.now();
+                            _selectedCategoryId = null;
+                          });
+                        },
+                        options: [
+                          AppTabOption(
+                            value: ReportPeriod.week,
+                            label: 'W',
+                            accentColor: activeAccent,
+                            softColor: activeAccent.withValues(alpha: 0.14),
+                          ),
+                          AppTabOption(
+                            value: ReportPeriod.month,
+                            label: 'M',
+                            accentColor: activeAccent,
+                            softColor: activeAccent.withValues(alpha: 0.14),
+                          ),
+                          AppTabOption(
+                            value: ReportPeriod.year,
+                            label: 'Y',
+                            accentColor: activeAccent,
+                            softColor: activeAccent.withValues(alpha: 0.14),
+                          ),
+                        ],
                       ),
-                      segments: const [
-                        ButtonSegment(
-                            value: ReportPeriod.week, label: Text('W')),
-                        ButtonSegment(
-                            value: ReportPeriod.month, label: Text('M')),
-                        ButtonSegment(
-                            value: ReportPeriod.year, label: Text('Y')),
-                      ],
-                      selected: {_period},
-                      onSelectionChanged: (s) {
-                        setState(() {
-                          _period = s.first;
-                          _anchor = DateTime.now();
-                          _selectedCategoryId = null;
-                        });
-                      },
                     ),
                   ],
                 ),

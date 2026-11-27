@@ -7,6 +7,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/providers/app_providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/currency_formatter.dart';
+import '../../core/widgets/app_segmented_tabs.dart';
 import '../../data/database/app_database.dart';
 import '../../data/database/daos/transaction_dao.dart';
 
@@ -118,21 +119,36 @@ class _TransactionFormSheetState extends ConsumerState<TransactionFormSheet> {
               Row(
                 children: [
                   Expanded(
-                    child: SegmentedButton<String>(
-                      showSelectedIcon: false,
-                      segments: const [
-                        ButtonSegment(value: 'expense', label: Text('Expense')),
-                        ButtonSegment(value: 'income', label: Text('Income')),
-                        ButtonSegment(
-                            value: 'transfer', label: Text('Transfer')),
-                      ],
-                      selected: {_txType},
-                      onSelectionChanged: (s) {
+                    child: AppSegmentedTabs<String>(
+                      height: 46,
+                      borderRadius: 15,
+                      selectedValue: _txType,
+                      onChanged: (v) {
                         setState(() {
-                          _txType = s.first;
+                          _txType = v;
                           _categoryId = null;
                         });
                       },
+                      options: [
+                        AppTabOption(
+                          value: 'expense',
+                          label: 'Expense',
+                          accentColor: colors.expense,
+                          softColor: colors.expenseSoft,
+                        ),
+                        AppTabOption(
+                          value: 'income',
+                          label: 'Income',
+                          accentColor: colors.income,
+                          softColor: colors.incomeSoft,
+                        ),
+                        AppTabOption(
+                          value: 'transfer',
+                          label: 'Transfer',
+                          accentColor: colors.transfer,
+                          softColor: colors.transferSoft,
+                        ),
+                      ],
                     ),
                   ),
                   if (widget.existing != null) ...[
