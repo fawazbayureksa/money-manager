@@ -76,3 +76,5 @@ money_manager_backup_*.json
 ios/Runner.xcodeproj
 ios/Runner.xcworkspace
 ios/Runner.xcodeproj/project.pbxproj
+# Widget Preview related
+.widget_preview/

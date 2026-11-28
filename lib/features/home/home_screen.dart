@@ -59,17 +59,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
                 child: Row(
                   children: [
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        Icons.account_balance_wallet_rounded,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        'lib/assets/new-icon.png',
+                        width: 36,
+                        height: 36,
+                        fit: BoxFit.cover,
                       ),
                     ),
                     const SizedBox(width: 10),
